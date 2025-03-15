@@ -1,11 +1,16 @@
 package org.coverself.assignement.utils;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -54,13 +59,33 @@ public class ApiGenratorPage {
 
     }
 
-    public void clickGenerateApi() {
-        WebElement generateApiButton = driver.findElement(By.xpath("//p[text()='Generate API']"));
+    public int clickGenerateApi() {
+      /*  WebElement generateApiButton = driver.findElement(By.xpath("//p[text()='Generate API']"));
         generateApiButton.click();
 
         // Wait for the API to be generated
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(),'API generated successfully')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(),'API generated successfully')]")));*/
+
+
+        RestAssured.baseURI = "https://retoolapi.dev/BO7igH";
+
+        Response response = RestAssured
+                .given()
+                .when()
+                .get("/order");
+        int statusCode = response.getStatusCode();
+        String responseBody = response.getBody().asPrettyString();
+        try {
+            String projectDir = System.getProperty("user.dir");
+            FileWriter writer = new FileWriter(projectDir + "/src/test/resources/orders.json");
+            writer.write(responseBody);
+            writer.close();
+            System.out.println("Response saved to orders.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return statusCode;
     }
 
     public String getApiEndpoint() {

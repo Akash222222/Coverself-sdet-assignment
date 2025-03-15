@@ -11,7 +11,6 @@ import org.testng.Assert;
 public class Api_GenratorStep {
     private WebDriver driver;
     private ApiGenratorPage apiPage;
-    public static String generatedApiUrl;
 
     @Before
     public void setUp() {
@@ -42,10 +41,12 @@ public class Api_GenratorStep {
 
     @And("I generate the API and capture the endpoint")
     public void i_generate_the_api_and_capture_the_endpoint() {
-        apiPage.clickGenerateApi();
-        generatedApiUrl = apiPage.getApiEndpoint();
-        Assert.assertTrue(generatedApiUrl.startsWith("https://"), "Expected a valid API endpoint");
-        System.out.println("Generated API URL: " + generatedApiUrl);
+        String expectedEndpoint = "https://retoolapi.dev/BO7igH/order";
+        int status = apiPage.clickGenerateApi();
+        Assert.assertEquals(status, 200);
+        String url = apiPage.getApiEndpoint();
+        Assert.assertEquals(url.trim(), expectedEndpoint, "API endpoint does not match expected value");
+
     }
 
     @After
